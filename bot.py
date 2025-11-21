@@ -10,8 +10,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Buscar tokens nas variáveis de ambiente
-TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
-DEEPINFRA_KEY = os.getenv("DEEPINFRA_API_KEY")
+TELEGRAM_TOKEN = os.getenv("8567098196:AAHfUNbxFEXLcQqe5H7T6jEwBhgwCPYznog")
+DEEPINFRA_KEY = os.getenv("XRvOi17AR4JT0nCmeC5JLJnBawa8HMAi")
 
 if not TELEGRAM_TOKEN or not DEEPINFRA_KEY:
     raise RuntimeError("Você precisa definir TELEGRAM_TOKEN e DEEPINFRA_API_KEY no Render!")
