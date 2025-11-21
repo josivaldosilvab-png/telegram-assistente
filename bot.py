@@ -5,18 +5,16 @@ import time
 
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
-# Logs para debug
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Buscar tokens nas variáveis de ambiente
-TELEGRAM_TOKEN = os.getenv("8567098196:AAHfUNbxFEXLcQqe5H7T6jEwBhgwCPYznog")
-DEEPINFRA_KEY = os.getenv("XRvOi17AR4JT0nCmeC5JLJnBawa8HMAi")
+# Correto: pegar variáveis de ambiente pelo nome
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+DEEPINFRA_KEY = os.getenv("DEEPINFRA_API_KEY")
 
 if not TELEGRAM_TOKEN or not DEEPINFRA_KEY:
     raise RuntimeError("Você precisa definir TELEGRAM_TOKEN e DEEPINFRA_API_KEY no Render!")
 
-# Função para gerar respostas com DeepInfra
 def gerar_resposta(prompt):
     url = "https://api.deepinfra.com/v1/openai/chat/completions"
     headers = {"Authorization": f"Bearer {DEEPINFRA_KEY}"}
@@ -35,11 +33,9 @@ def gerar_resposta(prompt):
         logger.error(f"Erro na API DeepInfra: {e}")
         return "⚠️ Erro ao gerar resposta. Tente novamente."
 
-# /start
 def start(update, context):
     update.message.reply_text("Olá! Sou seu assistente baseado em Napoleon Hill. Como posso te ajudar hoje?")
 
-# /foco
 def foco(update, context):
     update.message.reply_text("⏳ Iniciando ciclo de foco de 25 minutos...")
     time.sleep(1500)
@@ -47,7 +43,6 @@ def foco(update, context):
     time.sleep(300)
     update.message.reply_text("💪 Retornando ao foco!")
 
-# Mensagem comum
 def responder(update, context):
     pergunta = update.message.text
     resposta = gerar_resposta(pergunta)
@@ -61,15 +56,11 @@ def main():
 
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("foco", foco))
-
     dp.add_handler(MessageHandler(Filters.text & ~Filters.command, responder))
 
-    try:
-        updater.start_polling()
-        logger.info("Bot rodando com sucesso!")
-        updater.idle()
-    except Exception as e:
-        logger.exception(f"Erro ao iniciar o bot: {e}")
+    updater.start_polling()
+    logger.info("Bot rodando com sucesso!")
+    updater.idle()
 
 if __name__ == "__main__":
     main()
