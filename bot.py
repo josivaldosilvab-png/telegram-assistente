@@ -6,8 +6,8 @@ from datetime import datetime
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 # Pegando as credenciais das variáveis de ambiente
-TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
-DEEPINFRA_API_KEY = os.environ.get("DEEPINFRA_API_KEY")
+TELEGRAM_TOKEN = os.environ.get("8567098196:AAHfUNbxFEXLcQqe5H7T6jEwBhgwCPYznog")
+DEEPINFRA_API_KEY = os.environ.get("XRvOi17AR4JT0nCmeC5JLJnBawa8HMAi")
 TASKS_FILE = "tasks.json"
 
 if not TELEGRAM_TOKEN or not DEEPINFRA_API_KEY:
