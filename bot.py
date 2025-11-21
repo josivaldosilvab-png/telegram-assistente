@@ -2,25 +2,31 @@ import os
 import logging
 import requests
 import time
-
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
+# Logs
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Correto: pegar variáveis de ambiente pelo nome
+# Variáveis de ambiente corretas
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
-DEEPINFRA_KEY = os.getenv("DEEPINFRA_API_KEY")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-if not TELEGRAM_TOKEN or not DEEPINFRA_KEY:
-    raise RuntimeError("Você precisa definir TELEGRAM_TOKEN e DEEPINFRA_API_KEY no Render!")
+if not TELEGRAM_TOKEN or not GROQ_API_KEY:
+    raise RuntimeError(
+        "Você precisa definir TELEGRAM_TOKEN e GROQ_API_KEY no Render!"
+    )
 
+# Função para gerar respostas usando Groq (gratuito)
 def gerar_resposta(prompt):
-    url = "https://api.deepinfra.com/v1/openai/chat/completions"
-    headers = {"Authorization": f"Bearer {DEEPINFRA_KEY}"}
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Content-Type": "application/json",
+    }
 
     data = {
-        "model": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+        "model": "llama-3.1-8b-instant",  # modelo 100% gratuito
         "messages": [{"role": "user", "content": prompt}],
     }
 
@@ -29,13 +35,18 @@ def gerar_resposta(prompt):
         response.raise_for_status()
         result = response.json()
         return result["choices"][0]["message"]["content"]
+
     except Exception as e:
-        logger.error(f"Erro na API DeepInfra: {e}")
+        logger.error(f"Erro na API Groq: {e}")
         return "⚠️ Erro ao gerar resposta. Tente novamente."
 
+# /start
 def start(update, context):
-    update.message.reply_text("Olá! Sou seu assistente baseado em Napoleon Hill. Como posso te ajudar hoje?")
+    update.message.reply_text(
+        "Olá! Sou seu assistente baseado no estilo Napoleon Hill. Como posso ajudar?"
+    )
 
+# /foco
 def foco(update, context):
     update.message.reply_text("⏳ Iniciando ciclo de foco de 25 minutos...")
     time.sleep(1500)
@@ -43,9 +54,10 @@ def foco(update, context):
     time.sleep(300)
     update.message.reply_text("💪 Retornando ao foco!")
 
+# Resposta normal
 def responder(update, context):
-    pergunta = update.message.text
-    resposta = gerar_resposta(pergunta)
+    mensagem = update.message.text
+    resposta = gerar_resposta(mensagem)
     update.message.reply_text(resposta)
 
 def main():
@@ -59,7 +71,7 @@ def main():
     dp.add_handler(MessageHandler(Filters.text & ~Filters.command, responder))
 
     updater.start_polling()
-    logger.info("Bot rodando com sucesso!")
+    logger.info("Bot rodando!")
     updater.idle()
 
 if __name__ == "__main__":
