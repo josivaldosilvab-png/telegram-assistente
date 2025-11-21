@@ -1,21 +1,18 @@
-# Dockerfile mínimo e confiável para rodar o bot com Python 3.10
+# Dockerfile funcional usando Python 3.10 (compatível com python-telegram-bot 13)
 FROM python:3.10-slim
 
-# Prevent Python from writing pyc files to disc and buffering stdout/stderr
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Copia apenas requirements primeiro (cache de dependências)
+# Copiar dependências primeiro
 COPY requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r /app/requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia todo o código
+# Copiar código
 COPY . /app
 
-# Expor porta (não obrigatória para polling; só para compatibilidade)
 EXPOSE 8000
 
-# Comando de inicialização
 CMD ["python", "bot.py"]
